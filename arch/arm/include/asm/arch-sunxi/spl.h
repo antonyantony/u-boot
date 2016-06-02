@@ -10,7 +10,7 @@
 
 #define BOOT0_MAGIC		"eGON.BT0"
 #define SPL_SIGNATURE		"SPL" /* marks "sunxi" SPL header */
-#define SPL_HEADER_VERSION	1
+#define SPL_HEADER_VERSION	2
 
 #if defined(CONFIG_MACH_SUN9I) || defined(CONFIG_MACH_SUN50I)
 #define SPL_ADDR		0x10000
@@ -58,9 +58,25 @@ struct boot_file_head {
 	 * compatible format, ready to be imported via "env import -t".
 	 */
 	uint32_t fel_uEnv_length;
-	uint32_t reserved1[2];
+	/*
+	 * Offset of an ASCIIZ string (relative to the SPL header), which
+	 * contains the default device tree name (CONFIG_DEFAULT_DEVICE_TREE).
+	 * This is optional and may be set to NULL. Is intended to be used
+	 * by flash programming tools for providing nice informative messages
+	 * to the users.
+	 */
+	uint32_t offset_of_the_default_device_tree_name;
+	/*
+	 * A 32-bit hash value, calculated from the list of compatible device
+	 * tree names (CONFIG_OF_LIST or CONFIG_DEFAULT_DEVICE_TREE). Is
+	 * intended to be used by flash programming tools for safeguearding
+	 * against upgrading to an incompatible firmware.
+	 */
+	uint32_t crc32_of_the_compatible_device_tree_list;
 	uint32_t boot_media;		/* written here by the boot ROM */
-	uint32_t reserved2[5];		/* padding, align to 64 bytes */
+	/* A padding area (may be used for storing text strings) */
+	uint32_t string_pool[13];
+	/* The header must be a multiple of 32 bytes (for VBAR alignment) */
 };
 
 #define is_boot0_magic(addr)	(memcmp((void *)addr, BOOT0_MAGIC, 8) == 0)

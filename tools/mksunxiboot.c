@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <u-boot/crc.h>
 #include "../arch/arm/include/asm/arch-sunxi/spl.h"
 
 #define STAMP_VALUE                     0x5F0A6C39
@@ -70,11 +71,55 @@ int main(int argc, char *argv[])
 	struct boot_img img;
 	unsigned file_size;
 	int count;
+	char *tool_name = argv[0];
+	char *default_dt = NULL;
+	char *compatible_dt_list = NULL;
 
-	if (argc < 2) {
-		printf("\tThis program makes an input bin file to sun4i " \
-		       "bootable image.\n" \
-		       "\tUsage: %s input_file out_putfile\n", argv[0]);
+	/* a sanity check */
+	if ((sizeof(img.header) % 32) != 0) {
+		fprintf(stderr, "ERROR: the SPL header must be a multiple ");
+		fprintf(stderr, "of 32 bytes.\n");
+		return EXIT_FAILURE;
+	}
+
+	/* process optional command line switches */
+	while (argc >= 2 && argv[1][0] == '-') {
+		if (strcmp(argv[1], "--default-dt") == 0) {
+			if (argc >= 3) {
+				default_dt = argv[2];
+				argv += 2;
+				argc -= 2;
+				continue;
+			}
+			fprintf(stderr, "ERROR: no --default-dt arg\n");
+			return EXIT_FAILURE;
+		} else if (strcmp(argv[1], "--compatible-dt-list") == 0) {
+			if (argc >= 3) {
+				compatible_dt_list = argv[2];
+				argv += 2;
+				argc -= 2;
+				continue;
+			}
+			fprintf(stderr, "ERROR: no --compatible-dt-list arg\n");
+			return EXIT_FAILURE;
+		} else {
+			fprintf(stderr, "ERROR: bad option '%s'\n", argv[1]);
+			return EXIT_FAILURE;
+		}
+	}
+
+	if (!compatible_dt_list || strlen(compatible_dt_list) == 0)
+		compatible_dt_list = default_dt;
+
+	if (argc < 3) {
+		printf("This program converts an input binary file to a sunxi bootable image.\n");
+		printf("\nUsage: %s [options] input_file output_file\n",
+		       tool_name);
+		printf("Where [options] may be:\n");
+		printf("  --default-dt arg         - 'arg' is the default device tree name\n");
+		printf("                             (CONFIG_DEFAULT_DEVICE_TREE).\n");
+		printf("  --compatible-dt-list arg - 'arg' is the space separated list of the\n");
+		printf("                             compatible device tree names (CONFIG_OF_LIST).\n");
 		return EXIT_FAILURE;
 	}
 
@@ -121,6 +166,23 @@ int main(int argc, char *argv[])
 
 	memcpy(img.header.spl_signature, SPL_SIGNATURE, 3); /* "sunxi" marker */
 	img.header.spl_signature[3] = SPL_HEADER_VERSION;
+
+	if (default_dt) {
+		if (strlen(default_dt) + 1 <= sizeof(img.header.string_pool)) {
+			strcpy((char *)img.header.string_pool, default_dt);
+			img.header.offset_of_the_default_device_tree_name =
+				cpu_to_le32(offsetof(struct boot_file_head,
+						     string_pool));
+		} else {
+			printf("WARNING: The SPL header is too small\n");
+			printf("         and has no space to store the dt name.\n");
+		}
+	}
+	if (compatible_dt_list) {
+		img.header.crc32_of_the_compatible_device_tree_list =
+			cpu_to_le32(crc32(0, (uint8_t *)compatible_dt_list,
+				    strlen(compatible_dt_list)));
+	}
 
 	gen_check_sum(&img.header);
 

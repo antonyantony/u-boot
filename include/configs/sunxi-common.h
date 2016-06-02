@@ -188,14 +188,14 @@
 #endif
 
 #if defined(CONFIG_MACH_SUN9I)
-#define CONFIG_SPL_TEXT_BASE		0x10040		/* sram start+header */
-#define CONFIG_SPL_MAX_SIZE		0x5fc0		/* ? KiB on sun9i */
+#define CONFIG_SPL_TEXT_BASE		0x10060		/* sram start+header */
+#define CONFIG_SPL_MAX_SIZE		0x5fa0		/* ? KiB on sun9i */
 #elif defined(CONFIG_MACH_SUN50I)
-#define CONFIG_SPL_TEXT_BASE		0x10040		/* sram start+header */
-#define CONFIG_SPL_MAX_SIZE		0x7fc0		/* 32 KiB on sun50i */
+#define CONFIG_SPL_TEXT_BASE		0x10060		/* sram start+header */
+#define CONFIG_SPL_MAX_SIZE		0x7fa0		/* 32 KiB on sun50i */
 #else
-#define CONFIG_SPL_TEXT_BASE		0x40		/* sram start+header */
-#define CONFIG_SPL_MAX_SIZE		0x5fc0		/* 24KB on sun4i/sun7i */
+#define CONFIG_SPL_TEXT_BASE		0x60		/* sram start+header */
+#define CONFIG_SPL_MAX_SIZE		0x5fa0		/* 24KB on sun4i/sun7i */
 #endif
 
 #ifndef CONFIG_ARM64

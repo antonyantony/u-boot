@@ -171,6 +171,7 @@ hostprogs-$(CONFIG_MX28) += mxsboot
 HOSTCFLAGS_mxsboot.o := -pedantic
 
 hostprogs-$(CONFIG_ARCH_SUNXI) += mksunxiboot
+mksunxiboot-objs := mksunxiboot.o lib/crc32.o
 
 hostprogs-$(CONFIG_NETCONSOLE) += ncb
 hostprogs-$(CONFIG_SHA1_CHECK_UB_IMG) += ubsha1

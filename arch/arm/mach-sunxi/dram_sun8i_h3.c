@@ -438,7 +438,7 @@ static int mctl_channel_init(uint16_t socid, struct dram_para *para)
 		clrsetbits_le32(&mctl_ctl->dx[i].gcr, (0x3 << 4) |
 				(0x1 << 1) | (0x3 << 2) | (0x3 << 12) |
 				(0x3 << 14),
-				IS_ENABLED(CONFIG_DRAM_ODT_EN) ? 0x0 : 0x2);
+				IS_ENABLED(CONFIG_DRAM_ODT_EN) ? 0x0 : 0x20);
 
 	/* AC PDR should always ON */
 	setbits_le32(&mctl_ctl->aciocr, 0x1 << 1);

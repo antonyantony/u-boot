@@ -20,13 +20,26 @@
 #define MMCSD_MODE_FS		2
 #define MMCSD_MODE_EMMCBOOT	3
 
+/*
+ * Information about an U-Boot image file as described in include/image.h.
+ * Parsed by the SPL code from a legacy or FIT image file.
+ *
+ * @name: descriptive string (mkimage -n)
+ * @load_addr: address to load the image file to (mkimage -a)
+ * @entry_point: address of first instruction to execute (mkimage -e)
+ * @size: size of image in bytes
+ * @flags: optional, used only for SPL_COPY_PAYLOAD_ONLY so far
+ * @os: target operating system, one of IH_OS_* (mkimage -O)
+ * @arch: target architecture, one of IH_ARCH_* (mkimage -A)
+ */
 struct spl_image_info {
 	const char *name;
-	u8 os;
 	ulong load_addr;
 	ulong entry_point;
 	u32 size;
 	u32 flags;
+	u8 os;
+	u8 arch;
 };
 
 /*

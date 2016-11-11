@@ -65,6 +65,7 @@ config MACH_SUN50I_H5
 	select SUNXI_GEN_SUN6I
 	select SUNXI_HIGH_SRAM
 	select MACH_SUN8I_H3
+	select SUPPORT_SPL
 
 choice
 	prompt "Sunxi SoC Variant"
@@ -162,6 +163,11 @@ config MACH_SUN50I_32
 config MACH_SUN50I_H5_64
 	bool "sun50i (Allwinner H5)"
 	select ARM64
+	select MACH_SUN50I_H5
+
+config MACH_SUN50I_H5_32
+	bool "sun50i (Allwinner H5) 32-bit SPL"
+	select CPU_V7
 	select MACH_SUN50I_H5
 
 endchoice

@@ -657,7 +657,7 @@ unsigned long sunxi_dram_init(void)
 		.row_bits = 15,
 		.page_size = 4096,
 
-#if defined(CONFIG_MACH_SUN8I_H3)
+#if defined(CONFIG_MACH_SUN8I_H3_32)
 		.dx_read_delays  = SUN8I_H3_DX_READ_DELAYS,
 		.dx_write_delays = SUN8I_H3_DX_WRITE_DELAYS,
 		.ac_delays	 = SUN8I_H3_AC_DELAYS,
@@ -676,7 +676,7 @@ unsigned long sunxi_dram_init(void)
  * the static functions. This saves us #ifdefs, but still keeps the binary
  * small.
  */
-#if defined(CONFIG_MACH_SUN8I_H3)
+#if defined(CONFIG_MACH_SUN8I_H3_32)
 	uint16_t socid = SOCID_H3;
 #elif defined(CONFIG_MACH_SUN50I)
 	uint16_t socid = SOCID_A64;
